@@ -73,7 +73,8 @@ class DataHandler:
         seen: set,
     ) -> dict:
         comment = comments[random.randint(0, len(comments) - 1)]
-        if comment.body == "[removed]" or comment.id in seen:
+        comment_missing = comment.body in ["[removed]", "[deleted]"]
+        if comment_missing or comment.id in seen:
             return None
 
         return {"comment_id": comment.id, "comment_body": comment.body}
