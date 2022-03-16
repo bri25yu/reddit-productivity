@@ -1,0 +1,76 @@
+<title>
+    {% block title %}
+        Info 159 Annotation
+    {% endblock %}
+</title>
+
+{% block header %}
+    <style>
+        .heading {
+            text-align: center;
+        }
+
+        .container {
+            text-align: center;
+            width: 50%;
+            margin: auto;
+        }
+
+        .details {
+            font-size: 110%;
+        }
+
+        .details-title {
+            font-weight: bold;
+        }
+
+        .submit-button {
+            background-color: aliceblue;
+            font-size: 125%;
+            border-radius: 0.2em;
+            border-color: lightgray;
+            border-width: 0.1em;
+            width: 50%;
+        }
+    </style>
+{% endblock %}
+
+{% block heading %}
+    <h1 class="heading">Reddit productivity | Info 159 Annotation</h1>
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="details">
+            <div class="details-title">
+                Annotation instructions
+            </div>
+            Insert annotation instructions here
+        </div>
+        <br><br>
+
+        <div class="details">
+            <div class="details-title">
+                Submission title
+            </div>
+            {{ submission_title }}
+        </div>
+        <br><br>
+
+        <div class="details">
+            <div class="details-title">
+                Comment
+            </div>
+            {{ comment_body }}
+        </div>
+        <br><br>
+
+        <form action="{% url 'index' %}" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="hidden" name="datapoint_id" value="{{ datapoint_id }}" />
+            <button type="submit" class="submit-button" name="name" value="1">Productive</button>
+            <br><br>
+            <button type="submit" class="submit-button" name="name" value="0">Not productive</button>
+        </form>
+    </div>
+{% endblock %}
