@@ -1,0 +1,79 @@
+<title>
+    {% block title %}
+        Info 159 Annotation
+    {% endblock %}
+</title>
+
+{% load static %}
+
+{% block header %}
+    <link rel="stylesheet" href="{% static 'annotate/style.css' %}">
+
+    <style>
+        .details {
+            font-size: 110%;
+        }
+
+        .details-title {
+            font-weight: bold;
+        }
+
+        .progress-bar {
+            height: 1em;
+            width: 50%;
+            display: block;
+            text-align: center;
+            margin: auto;
+        }
+    </style>
+
+    <script>
+        if (window.history.replaceState) {
+            window.history.replaceState(null, null, window.location.href);
+        }
+    </script>
+{% endblock %}
+
+{% block heading %}
+    <h1 class="heading">Reddit productivity | Info 159 Annotation</h1>
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="details">
+            <div class="details-title">
+                Annotation instructions
+            </div>
+            Insert annotation instructions here
+        </div>
+        <br><br>
+
+        <div class="details">
+            <div class="details-title">
+                Submission title
+            </div>
+            {{ submission_title | safe }}
+        </div>
+        <br><br>
+
+        <div class="details">
+            <div class="details-title">
+                Comment
+            </div>
+            {{ comment_body | safe }}
+        </div>
+        <br><br>
+
+        <form action="{% url 'annotate' %}" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="hidden" name="datapoint_index" value="{{ datapoint_index }}" />
+            <button type="submit" class="submit-button" name="productive">Productive</button>
+            <br><br>
+            <button type="submit" class="submit-button" name="not_productive">Not productive</button>
+        </form>
+        <br><br>
+
+        <progress class="progress-bar" value="{{ annotations_finished }}" max="{{ annotation_total }}"></progress>
+        Annotations finished: {{ annotations_finished }} / {{ annotation_total }}
+    </div>
+{% endblock %}

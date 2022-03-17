@@ -1,0 +1,18 @@
+.heading {
+    text-align: center;
+}
+
+.container {
+    text-align: center;
+    width: 50%;
+    margin: auto;
+}
+
+.submit-button {
+    background-color: aliceblue;
+    font-size: 125%;
+    border-radius: 0.2em;
+    border-color: lightgray;
+    border-width: 0.1em;
+    width: 50%;
+}

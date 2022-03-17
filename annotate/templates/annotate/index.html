@@ -1,3 +1,5 @@
+{% load static %}
+
 <title>
     {% block title %}
         Info 159 Annotation
@@ -5,42 +7,7 @@
 </title>
 
 {% block header %}
-    <style>
-        .heading {
-            text-align: center;
-        }
-
-        .container {
-            text-align: center;
-            width: 50%;
-            margin: auto;
-        }
-
-        .details {
-            font-size: 110%;
-        }
-
-        .details-title {
-            font-weight: bold;
-        }
-
-        .submit-button {
-            background-color: aliceblue;
-            font-size: 125%;
-            border-radius: 0.2em;
-            border-color: lightgray;
-            border-width: 0.1em;
-            width: 50%;
-        }
-
-        .progress-bar {
-            height: 1em;
-            width: 50%;
-            display: block;
-            text-align: center;
-            margin: auto;
-        }
-    </style>
+    <link rel="stylesheet" type="text/css" href="{% static 'annotate/style.css' %}">
 
     <script>
         if (window.history.replaceState) {
@@ -55,40 +22,15 @@
 
 {% block content %}
     <div class="container">
-        <div class="details">
-            <div class="details-title">
-                Annotation instructions
-            </div>
-            Insert annotation instructions here
-        </div>
-        <br><br>
-
-        <div class="details">
-            <div class="details-title">
-                Submission title
-            </div>
-            {{ submission_title | safe }}
-        </div>
-        <br><br>
-
-        <div class="details">
-            <div class="details-title">
-                Comment
-            </div>
-            {{ comment_body | safe }}
-        </div>
-        <br><br>
+        Select an annotation split:
 
         <form action="{% url 'index' %}" method="post" enctype="multipart/form-data">
             {% csrf_token %}
-            <input type="hidden" name="datapoint_index" value="{{ datapoint_index }}" />
-            <button type="submit" class="submit-button" name="productive">Productive</button>
+            <button type="submit" class="submit-button" name="annotation_split" value="full">Full</button>
             <br><br>
-            <button type="submit" class="submit-button" name="not_productive">Not productive</button>
+            <button type="submit" class="submit-button" name="annotation_split" value="exploration">Exploration</button>
+            <br><br>
+            <button type="submit" class="submit-button" name="annotation_split" value="evaluation">Evaluation</button>
         </form>
-        <br><br>
-
-        <progress class="progress-bar" value="{{ annotations_finished }}" max="{{ annotation_total }}"></progress>
-        Annotations finished: {{ annotations_finished }} / {{ annotation_total }}
     </div>
 {% endblock %}
