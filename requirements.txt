@@ -3,3 +3,6 @@ pandas
 tqdm
 django
 markdown
+
+torch
+transformers
