@@ -41,21 +41,26 @@ def annotate(request):
         datapoint_id = int(request.POST["datapoint_id"])
         score = int("productive" in request.POST)
 
-        datapoint_index = annotations[annotations["datapoint_id"] == datapoint_id].index[0]
+        datapoint_index = annotations[
+            annotations["datapoint_id"] == datapoint_id
+        ].index[0]
         annotations.at[datapoint_index, "score"] = score
         annotations.to_csv(ANNOTATION_OUTPUT_PATH, sep="\t", index=False)
 
     if annotation_split != "full":
-        split_ids = set(data["datapoint_id"][data["annotation_split"] == annotation_split].values)
+        split_ids = set(
+            data["datapoint_id"][data["annotation_split"] == annotation_split].values
+        )
 
         data = data[data["datapoint_id"].isin(split_ids)].reset_index(drop=True)
-        annotations = annotations[annotations["datapoint_id"].isin(split_ids)].reset_index(drop=True)
-        print(data)
+        annotations = annotations[
+            annotations["datapoint_id"].isin(split_ids)
+        ].reset_index(drop=True)
 
     # Select random datapoint not already annotated
-    datapoint_index = random.randint(0, len(data)-1)
+    datapoint_index = random.randint(0, len(data) - 1)
     while pd.notna(annotations.iloc[datapoint_index]["score"]):
-        datapoint_index = random.randint(0, len(data)-1)
+        datapoint_index = random.randint(0, len(data) - 1)
 
     row = data.iloc[datapoint_index]
 

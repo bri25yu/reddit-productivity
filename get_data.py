@@ -113,7 +113,9 @@ class DataHandler:
                 progress_bar.update(1)
 
             df = df.append(rows, ignore_index=True)
-            df.to_csv(self.DATA_SAVE_PATH, sep="\t", index=False)  # Save csv periodically
+            df.to_csv(
+                self.DATA_SAVE_PATH, sep="\t", index=False
+            )  # Save csv periodically
 
         return df
 
