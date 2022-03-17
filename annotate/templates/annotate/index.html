@@ -23,6 +23,7 @@
 {% block content %}
     <div class="container">
         Select an annotation split:
+        <br><br>
 
         <form action="{% url 'index' %}" method="post" enctype="multipart/form-data">
             {% csrf_token %}

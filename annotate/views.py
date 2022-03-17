@@ -3,7 +3,7 @@ import pandas as pd
 import random
 from markdown import markdown
 
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 
 
 ANNOTATION_OUTPUT_PATH = "annotations.csv"
@@ -18,13 +18,37 @@ else:
     annotations = pd.read_csv(ANNOTATION_OUTPUT_PATH, sep="\t")
 
 
+def get_data_annotations():
+    return data, annotations
+
+
 def index(request):
+    if request.method == "POST":
+        request.session["annotation_split"] = request.POST["annotation_split"]
+        return redirect("annotate")
+
+    return render(request, "annotate/index.html")
+
+
+def annotate(request):
+    if "annotation_split" not in request.session:
+        return redirect("index")
+
+    annotation_split = request.session["annotation_split"]
+    data, annotations = get_data_annotations()
+
     if request.method == "POST":
         datapoint_index = int(request.POST["datapoint_index"])
         score = int("productive" in request.POST)
 
         annotations.at[datapoint_index, "score"] = score
         annotations.to_csv(ANNOTATION_OUTPUT_PATH, sep="\t", index=False)
+
+    if annotation_split != "full":
+        split_ids = set(data["datapoint_id"][data["annotation_split"] == annotation_split].values)
+
+        data = data[data["datapoint_id"].isin(split_ids)]
+        annotations = annotations[annotations["datapoint_id"].isin(split_ids)]
 
     # Select random datapoint not already annotated
     datapoint_index = random.randint(0, len(data)-1)
@@ -37,7 +61,8 @@ def index(request):
         "datapoint_index": datapoint_index,
         "submission_title": markdown(row["submission_title"]),
         "comment_body": markdown(row["comment_body"]),
+        "annotation_split": annotation_split,
         "annotations_finished": annotations["score"].notna().sum(),
         "annotation_total": len(data),
     }
-    return render(request, "annotate/index.html", context)
+    return render(request, "annotate/annotate.html", context)

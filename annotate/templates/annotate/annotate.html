@@ -35,7 +35,7 @@
 {% endblock %}
 
 {% block heading %}
-    <h1 class="heading">Reddit productivity | Info 159 Annotation</h1>
+    <h1 class="heading">Reddit productivity | Info 159 Annotation ({{ annotation_split }})</h1>
 {% endblock %}
 
 {% block content %}
@@ -75,5 +75,10 @@
 
         <progress class="progress-bar" value="{{ annotations_finished }}" max="{{ annotation_total }}"></progress>
         Annotations finished: {{ annotations_finished }} / {{ annotation_total }}
+        <br><br>
+
+        <form action="{% url 'index' %}">
+            <button type="submit" class="submit-button" style="width: 20%;">Back</button>
+        </form>
     </div>
 {% endblock %}

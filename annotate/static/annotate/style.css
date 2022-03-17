@@ -16,3 +16,7 @@
     border-width: 0.1em;
     width: 50%;
 }
+
+.submit-button:hover {
+    cursor: pointer;
+}
