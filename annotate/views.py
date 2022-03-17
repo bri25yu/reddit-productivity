@@ -38,17 +38,19 @@ def annotate(request):
     data, annotations = get_data_annotations()
 
     if request.method == "POST":
-        datapoint_index = int(request.POST["datapoint_index"])
+        datapoint_id = int(request.POST["datapoint_id"])
         score = int("productive" in request.POST)
 
+        datapoint_index = annotations[annotations["datapoint_id"] == datapoint_id].index[0]
         annotations.at[datapoint_index, "score"] = score
         annotations.to_csv(ANNOTATION_OUTPUT_PATH, sep="\t", index=False)
 
     if annotation_split != "full":
         split_ids = set(data["datapoint_id"][data["annotation_split"] == annotation_split].values)
 
-        data = data[data["datapoint_id"].isin(split_ids)]
-        annotations = annotations[annotations["datapoint_id"].isin(split_ids)]
+        data = data[data["datapoint_id"].isin(split_ids)].reset_index(drop=True)
+        annotations = annotations[annotations["datapoint_id"].isin(split_ids)].reset_index(drop=True)
+        print(data)
 
     # Select random datapoint not already annotated
     datapoint_index = random.randint(0, len(data)-1)
@@ -58,7 +60,7 @@ def annotate(request):
     row = data.iloc[datapoint_index]
 
     context = {
-        "datapoint_index": datapoint_index,
+        "datapoint_id": row["datapoint_id"],
         "submission_title": markdown(row["submission_title"]),
         "comment_body": markdown(row["comment_body"]),
         "annotation_split": annotation_split,
