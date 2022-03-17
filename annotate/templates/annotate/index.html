@@ -32,7 +32,21 @@
             border-width: 0.1em;
             width: 50%;
         }
+
+        .progress-bar {
+            height: 1em;
+            width: 50%;
+            display: block;
+            text-align: center;
+            margin: auto;
+        }
     </style>
+
+    <script>
+        if (window.history.replaceState) {
+            window.history.replaceState(null, null, window.location.href);
+        }
+    </script>
 {% endblock %}
 
 {% block heading %}
@@ -53,7 +67,7 @@
             <div class="details-title">
                 Submission title
             </div>
-            {{ submission_title }}
+            {{ submission_title | safe }}
         </div>
         <br><br>
 
@@ -61,16 +75,20 @@
             <div class="details-title">
                 Comment
             </div>
-            {{ comment_body }}
+            {{ comment_body | safe }}
         </div>
         <br><br>
 
         <form action="{% url 'index' %}" method="post" enctype="multipart/form-data">
             {% csrf_token %}
-            <input type="hidden" name="datapoint_id" value="{{ datapoint_id }}" />
-            <button type="submit" class="submit-button" name="name" value="1">Productive</button>
+            <input type="hidden" name="datapoint_index" value="{{ datapoint_index }}" />
+            <button type="submit" class="submit-button" name="productive">Productive</button>
             <br><br>
-            <button type="submit" class="submit-button" name="name" value="0">Not productive</button>
+            <button type="submit" class="submit-button" name="not_productive">Not productive</button>
         </form>
+        <br><br>
+
+        <progress class="progress-bar" value="{{ annotations_finished }}" max="{{ annotation_total }}"></progress>
+        Annotations finished: {{ annotations_finished }} / {{ annotation_total }}
     </div>
 {% endblock %}

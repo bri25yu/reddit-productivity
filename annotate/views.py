@@ -1,6 +1,7 @@
 import os
 import pandas as pd
 import random
+from markdown import markdown
 
 from django.shortcuts import render
 
@@ -19,7 +20,11 @@ else:
 
 def index(request):
     if request.method == "POST":
-        pass
+        datapoint_index = int(request.POST["datapoint_index"])
+        score = int("productive" in request.POST)
+
+        annotations.at[datapoint_index, "score"] = score
+        annotations.to_csv(ANNOTATION_OUTPUT_PATH, sep="\t", index=False)
 
     # Select random datapoint not already annotated
     datapoint_index = random.randint(0, len(data)-1)
@@ -29,8 +34,10 @@ def index(request):
     row = data.iloc[datapoint_index]
 
     context = {
-        "datapoint_id": row["datapoint_id"],
-        "submission_title": row["submission_title"],
-        "comment_body": row["comment_body"],
+        "datapoint_index": datapoint_index,
+        "submission_title": markdown(row["submission_title"]),
+        "comment_body": markdown(row["comment_body"]),
+        "annotations_finished": annotations["score"].notna().sum(),
+        "annotation_total": len(data),
     }
     return render(request, "annotate/index.html", context)
