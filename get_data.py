@@ -16,6 +16,7 @@ class DataHandler:
         "comment_id",
         "submission_title",
         "comment_body",
+        "annotation_split",
     ]
 
     def __init__(self):
@@ -45,7 +46,10 @@ class DataHandler:
         submissions = self.get_top_submissions(subreddit, self.N_SUBMISSIONS)
 
         # Get comments in df
-        self.get_comments(submissions)
+        df = self.get_comments(submissions)
+
+        # Assign rows to exploration or evaluation set
+        df = self.assign_split(df)
 
     @staticmethod
     def get_reddit_credentials(path: str) -> dict:
@@ -110,6 +114,20 @@ class DataHandler:
 
             df = df.append(rows, ignore_index=True)
             df.to_csv(self.DATA_SAVE_PATH, sep="\t", index=False)  # Save csv periodically
+
+        return df
+
+    def assign_split(self, df: pd.DataFrame) -> pd.DataFrame:
+        random.seed(self.RANDOM_SEED)
+
+        exploration_indices = set(random.sample(range(len(df)), k=len(df) // 2))
+        for i in range(len(df)):
+            split = "exploration" if i in exploration_indices else "evaluation"
+            df.at[i, "annotation_split"] = split
+
+        df.to_csv(self.DATA_SAVE_PATH, sep="\t", index=False)
+
+        return df
 
 
 if __name__ == "__main__":
