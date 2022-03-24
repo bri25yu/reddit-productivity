@@ -11,10 +11,12 @@ from django.core.paginator import Paginator
 
 LABELS = [
     "Arbitrate",
-    "Vouch",
-    "Meme",
-    "Opinion",
-    "Informative",
+    "Inquire",
+    "Argue",
+    "Summarize",
+    "Inform",
+    "Connect",
+    "Rhetorical",
 ]
 
 
