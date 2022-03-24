@@ -1,4 +1,5 @@
 import json
+from django.db import NotSupportedError
 import praw
 import random
 import pandas as pd
@@ -15,6 +16,7 @@ class DataHandler:
         "submission_id",
         "comment_id",
         "submission_title",
+        "comment_parent",
         "comment_body",
         "annotation_split",
     ]
@@ -76,12 +78,27 @@ class DataHandler:
         comments: praw.models.comment_forest.CommentForest,
         seen: set,
     ) -> dict:
-        comment = comments[random.randint(0, len(comments) - 1)]
+        while (comment := comments[random.randint(0, len(comments) - 1)]) \
+            and (replies := comment.replies) \
+            and random.randint(0, 1) == 1:
+            comments = replies
+
         comment_missing = comment.body in ["[removed]", "[deleted]"]
         if comment_missing or comment.id in seen:
             return None
 
-        return {"comment_id": comment.id, "comment_body": comment.body}
+        if comment.parent_id.startswith("t3_"):  # Parent is a submission
+            comment_parent = comment.parent().title
+        elif comment.parent_id.startswith("t1_"):  # Parent is another comment
+            comment_parent = comment.parent().body
+        else:
+            raise NotSupportedError(f"Unknown parent type: {comment.parent_id}")
+
+        return {
+            "comment_id": comment.id,
+            "comment_body": comment.body,
+            "comment_parent": comment_parent,
+        }
 
     def get_comments(
         self, submissions: praw.models.listing.generator.ListingGenerator

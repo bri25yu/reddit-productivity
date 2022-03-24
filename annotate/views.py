@@ -67,6 +67,7 @@ def annotate(request):
     context = {
         "datapoint_id": row["datapoint_id"],
         "submission_title": markdown(row["submission_title"]),
+        "comment_parent": markdown(row["comment_parent"]),
         "comment_body": markdown(row["comment_body"]),
         "annotation_split": annotation_split,
         "annotations_finished": annotations["score"].notna().sum(),

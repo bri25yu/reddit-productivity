@@ -12,6 +12,7 @@
     <style>
         .details {
             font-size: 110%;
+            text-align: left;
         }
 
         .details-title {
@@ -53,6 +54,14 @@
                 Submission title
             </div>
             {{ submission_title | safe }}
+        </div>
+        <br><br>
+
+        <div class="details">
+            <div class="details-title">
+                Comment parent context
+            </div>
+            {{ comment_parent | safe }}
         </div>
         <br><br>
 
