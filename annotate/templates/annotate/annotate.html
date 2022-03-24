@@ -76,11 +76,12 @@
         <form action="{% url 'annotate' %}" method="post" enctype="multipart/form-data">
             {% csrf_token %}
             <input type="hidden" name="datapoint_id" value="{{ datapoint_id }}" />
-            <button type="submit" class="submit-button" name="productive">Productive</button>
-            <br><br>
-            <button type="submit" class="submit-button" name="not_productive">Not productive</button>
+            
+            {% for l in labels %}
+                <button type="submit" class="submit-button" name="score" value="{{ l }}">{{ l }}</button>
+                <br><br>
+            {% endfor %}
         </form>
-        <br><br>
 
         <progress class="progress-bar" value="{{ annotations_finished }}" max="{{ annotation_total }}"></progress>
         Annotations finished: {{ annotations_finished }} / {{ annotation_total }}

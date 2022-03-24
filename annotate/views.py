@@ -6,6 +6,15 @@ from markdown import markdown
 from django.shortcuts import render, redirect
 
 
+LABELS = [
+    "Arbitrate",
+    "Vouch",
+    "Meme",
+    "Opinion",
+    "Informative",
+]
+
+
 ANNOTATION_OUTPUT_PATH = "annotations.csv"
 ANNOTATIONS_DF_COLUMNS = ["datapoint_id", "score"]
 
@@ -20,6 +29,10 @@ else:
 
 def get_data_annotations():
     return data, annotations
+
+
+def datapoint_id_to_index(df: pd.DataFrame, datapoint_id: int) -> int:
+    return df[df["datapoint_id"] == datapoint_id].index[0]
 
 
 def index(request):
@@ -39,11 +52,9 @@ def annotate(request):
 
     if request.method == "POST":
         datapoint_id = int(request.POST["datapoint_id"])
-        score = int("productive" in request.POST)
+        score = request.POST["score"]
 
-        datapoint_index = annotations[
-            annotations["datapoint_id"] == datapoint_id
-        ].index[0]
+        datapoint_index = datapoint_id_to_index(annotations, datapoint_id)
         annotations.at[datapoint_index, "score"] = score
         annotations.to_csv(ANNOTATION_OUTPUT_PATH, sep="\t", index=False)
 
@@ -72,5 +83,6 @@ def annotate(request):
         "annotation_split": annotation_split,
         "annotations_finished": annotations["score"].notna().sum(),
         "annotation_total": len(data),
+        "labels": LABELS,
     }
     return render(request, "annotate/annotate.html", context)
