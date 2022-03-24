@@ -74,6 +74,10 @@ class DataHandler:
         return subreddit.top(limit=n)
 
     @staticmethod
+    def comment_missing(comment_body: str):
+        return comment_body in ["[removed]", "[deleted]"]
+
+    @staticmethod
     def get_random_comment(
         comments: praw.models.comment_forest.CommentForest,
         seen: set,
@@ -83,8 +87,7 @@ class DataHandler:
             and random.randint(0, 1) == 1:
             comments = replies
 
-        comment_missing = comment.body in ["[removed]", "[deleted]"]
-        if comment_missing or comment.id in seen:
+        if DataHandler.comment_missing(comment.body) or comment.id in seen:
             return None
 
         if comment.parent_id.startswith("t3_"):  # Parent is a submission
@@ -93,6 +96,9 @@ class DataHandler:
             comment_parent = comment.parent().body
         else:
             raise NotSupportedError(f"Unknown parent type: {comment.parent_id}")
+
+        if DataHandler.comment_missing(comment_parent):
+            return None
 
         return {
             "comment_id": comment.id,
