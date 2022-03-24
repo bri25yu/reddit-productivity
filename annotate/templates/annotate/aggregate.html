@@ -1,0 +1,26 @@
+{% load static %}
+
+<title>
+    {% block title %}
+        Info 159 Annotation
+    {% endblock %}
+</title>
+
+{% block header %}
+    <link rel="stylesheet" type="text/css" href="{% static 'annotate/style.css' %}">
+
+    <script>
+        if (window.history.replaceState) {
+            window.history.replaceState(null, null, window.location.href);
+        }
+    </script>
+{% endblock %}
+
+{% block heading %}
+    <h1 class="heading">Reddit productivity | Info 159 Annotation</h1>
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+    </div>
+{% endblock %}

@@ -33,5 +33,15 @@
             <br><br>
             <button type="submit" class="submit-button" name="annotation_split" value="evaluation">Evaluation</button>
         </form>
+        <br><br>
+
+        <hr>
+        <br><br>
+
+        <form action="{% url 'aggregate' %}" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <button type="submit" class="submit-button">View past annotations</button>
+            <br><br>
+        </form>
     </div>
 {% endblock %}

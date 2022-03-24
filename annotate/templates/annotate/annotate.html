@@ -76,7 +76,7 @@
         <form action="{% url 'annotate' %}" method="post" enctype="multipart/form-data">
             {% csrf_token %}
             <input type="hidden" name="datapoint_id" value="{{ datapoint_id }}" />
-            
+
             {% for l in labels %}
                 <button type="submit" class="submit-button" name="score" value="{{ l }}">{{ l }}</button>
                 <br><br>

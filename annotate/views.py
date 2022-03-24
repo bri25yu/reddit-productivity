@@ -132,3 +132,8 @@ class AnnotateView(TemplateView):
     @staticmethod
     def _datapoint_id_to_index(df: pd.DataFrame, datapoint_id: int) -> int:
         return df[df["datapoint_id"] == datapoint_id].index[0]
+
+
+def aggregate(request):
+    context = {}
+    return render(request, "annotate/aggregate.html", context)
