@@ -7,6 +7,7 @@ from typing import Tuple
 from django.shortcuts import render, redirect
 from django.views.generic.base import TemplateView
 from django.core.paginator import Paginator
+from django.contrib.staticfiles import finders
 
 
 LABELS = [
@@ -89,12 +90,16 @@ class AnnotateView(TemplateView):
             }
         ]
 
+        annotation_instructions = \
+            open(finders.find("annotate/annotation_instructions.md"), encoding="utf8").read()
+
         return {
             "comments": comments,
             "datapoint_id": row["datapoint_id"],
             "annotation_split": annotation_split,
             "annotations_finished": annotations_split["score"].notna().sum(),
             "annotation_total": len(data_split),
+            "annotation_instructions": markdown(annotation_instructions, extensions=["tables"]),
             "labels": LABELS,
         }
 
