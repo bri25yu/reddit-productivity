@@ -20,13 +20,23 @@ LABELS = [
 ANNOTATION_OUTPUT_PATH = "annotations.csv"
 ANNOTATIONS_DF_COLUMNS = ["datapoint_id", "score"]
 
-data = pd.read_csv("data.csv", sep="\t")
-if not os.path.exists(ANNOTATION_OUTPUT_PATH):
-    annotations = pd.DataFrame(columns=ANNOTATIONS_DF_COLUMNS)
-    annotations["datapoint_id"] = data["datapoint_id"]
-    annotations.to_csv(ANNOTATION_OUTPUT_PATH, sep="\t", index=False)
-else:
-    annotations = pd.read_csv(ANNOTATION_OUTPUT_PATH, sep="\t")
+
+def provision() -> Tuple[pd.DataFrame, pd.DataFrame, list]:
+    data = pd.read_csv("data.csv", sep="\t")
+    if not os.path.exists(ANNOTATION_OUTPUT_PATH):
+        annotations = pd.DataFrame(columns=ANNOTATIONS_DF_COLUMNS)
+        annotations["datapoint_id"] = data["datapoint_id"]
+        annotations.to_csv(ANNOTATION_OUTPUT_PATH, sep="\t", index=False)
+    else:
+        annotations = pd.read_csv(ANNOTATION_OUTPUT_PATH, sep="\t")
+
+    random.seed(42)
+    annotation_ordering = list(range(len(data)))
+    random.shuffle(annotation_ordering)
+
+    return data, annotations, annotation_ordering
+
+data, annotations, annotation_ordering = provision()
 
 
 def index(request):
@@ -51,7 +61,7 @@ class AnnotateView(TemplateView):
         datapoint_id = int(request.POST["datapoint_id"])
         score = request.POST["score"]
 
-        _, annotations = self._get_data_annotations()
+        annotations = self._get_data_annotations()[1]
 
         datapoint_index = self._datapoint_id_to_index(annotations, datapoint_id)
         annotations.at[datapoint_index, "score"] = score
@@ -61,12 +71,12 @@ class AnnotateView(TemplateView):
 
     def get_context_data(self, **kwargs):
         annotation_split = self.request.session["annotation_split"]
-        data, annotations = self._get_data_annotations()
+        data, annotations, annotation_ordering = self._get_data_annotations()
 
-        data_split, annotations_split, split_ids = self._get_data_splits(
-            data, annotations, annotation_split
+        data_split, annotations_split, annotation_ordering_split = self._get_data_splits(
+            data, annotations, annotation_ordering, annotation_split
         )
-        row = self._get_next_row(data_split, annotations_split)
+        row = self._get_next_row(data_split, annotations_split, annotation_ordering_split)
 
         return {
             "datapoint_id": row["datapoint_id"],
@@ -80,15 +90,16 @@ class AnnotateView(TemplateView):
         }
 
     @staticmethod
-    def _get_data_annotations() -> tuple:
-        return data, annotations
+    def _get_data_annotations() -> Tuple[pd.DataFrame, pd.DataFrame, list]:
+        return data, annotations, annotation_ordering
 
     @staticmethod
     def _get_data_splits(
         data: pd.DataFrame,
         annotations: pd.DataFrame,
+        annotation_ordering: list,
         annotation_split: str
-    ) -> Tuple[pd.DataFrame, pd.DataFrame, set]:
+    ) -> Tuple[pd.DataFrame, pd.DataFrame, list]:
         if annotation_split == "full":
             return data, annotations, set(range(len(data)))
 
@@ -101,15 +112,22 @@ class AnnotateView(TemplateView):
             annotations["datapoint_id"].isin(split_ids)
         ].reset_index(drop=True)
 
-        return data_split, annotations_split, split_ids
+        annotation_ordering_split = [i for i in annotation_ordering if i in split_ids]
 
-    @staticmethod
-    def _get_next_row(data: pd.DataFrame, annotations: pd.DataFrame) -> pd.DataFrame:
-        datapoint_index = random.randint(0, len(data) - 1)
-        while pd.notna(annotations.iloc[datapoint_index]["score"]):
-            datapoint_index = random.randint(0, len(data) - 1)
+        return data_split, annotations_split, annotation_ordering_split
 
-        return data.iloc[datapoint_index]
+    def _get_next_row(
+        self,
+        data: pd.DataFrame,
+        annotations: pd.DataFrame,
+        ordering: list,
+    ) -> pd.DataFrame:
+        for datapoint_id in ordering:
+            datapoint_index = self._datapoint_id_to_index(annotations, datapoint_id)
+            if pd.isna(annotations.iloc[datapoint_index]["score"]):
+                break
+
+        return data.iloc[self._datapoint_id_to_index(data, datapoint_id)]
 
     @staticmethod
     def _datapoint_id_to_index(df: pd.DataFrame, datapoint_id: int) -> int:
