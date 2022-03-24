@@ -22,4 +22,24 @@
         {{ comment.comment_body | safe }}
     </div>
     <br><br>
+
+    {% if comment.annotation_split %}
+        <div class="details">
+            <div class="details-title">
+                Annotation split
+            </div>
+            {{ comment.annotation_split }}
+        </div>
+        <br><br>
+    {% endif %}
+
+    {% if comment.score_given %}
+        <div class="details">
+            <div class="details-title">
+                Score given
+            </div>
+            {{ comment.score_given }}
+        </div>
+        <br><br>
+    {% endif %}
 {% endfor %}

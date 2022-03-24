@@ -155,6 +155,8 @@ def aggregate(request):
             "submission_title": markdown(row["submission_title"]),
             "comment_parent": markdown(row["comment_parent"]),
             "comment_body": markdown(row["comment_body"]),
+            "annotation_split": row["annotation_split"],
+            "score_given": annotations.iloc[i]["score"],
         })
 
     paginator = Paginator(comments, 1) # Show 25 contacts per page.
