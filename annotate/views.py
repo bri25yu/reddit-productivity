@@ -78,11 +78,17 @@ class AnnotateView(TemplateView):
         )
         row = self._get_next_row(data_split, annotations_split, annotation_ordering_split)
 
+        comments = [
+            {
+                "submission_title": markdown(row["submission_title"]),
+                "comment_parent": markdown(row["comment_parent"]),
+                "comment_body": markdown(row["comment_body"]),
+            }
+        ]
+
         return {
+            "comments": comments,
             "datapoint_id": row["datapoint_id"],
-            "submission_title": markdown(row["submission_title"]),
-            "comment_parent": markdown(row["comment_parent"]),
-            "comment_body": markdown(row["comment_body"]),
             "annotation_split": annotation_split,
             "annotations_finished": annotations_split["score"].notna().sum(),
             "annotation_total": len(data_split),

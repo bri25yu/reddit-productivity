@@ -10,15 +10,6 @@
     <link rel="stylesheet" href="{% static 'annotate/style.css' %}">
 
     <style>
-        .details {
-            font-size: 110%;
-            text-align: left;
-        }
-
-        .details-title {
-            font-weight: bold;
-        }
-
         .progress-bar {
             height: 1em;
             width: 50%;
@@ -49,29 +40,7 @@
         </div>
         <br><br>
 
-        <div class="details">
-            <div class="details-title">
-                Submission title
-            </div>
-            {{ submission_title | safe }}
-        </div>
-        <br><br>
-
-        <div class="details">
-            <div class="details-title">
-                Comment parent context
-            </div>
-            {{ comment_parent | safe }}
-        </div>
-        <br><br>
-
-        <div class="details">
-            <div class="details-title">
-                Comment
-            </div>
-            {{ comment_body | safe }}
-        </div>
-        <br><br>
+        {% include 'annotate/submission_information.html' %}
 
         <form action="{% url 'annotate' %}" method="post" enctype="multipart/form-data">
             {% csrf_token %}

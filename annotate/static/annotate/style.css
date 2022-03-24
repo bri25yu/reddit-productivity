@@ -20,3 +20,12 @@
 .submit-button:hover {
     cursor: pointer;
 }
+
+.details {
+    font-size: 110%;
+    text-align: left;
+}
+
+.details-title {
+    font-weight: bold;
+}

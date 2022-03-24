@@ -1,0 +1,25 @@
+{% for comment in comments %}
+    <div class="details">
+        <div class="details-title">
+            Submission title
+        </div>
+        {{ comment.submission_title | safe }}
+    </div>
+    <br><br>
+
+    <div class="details">
+        <div class="details-title">
+            Comment parent context
+        </div>
+        {{ comment.comment_parent | safe }}
+    </div>
+    <br><br>
+
+    <div class="details">
+        <div class="details-title">
+            Comment
+        </div>
+        {{ comment.comment_body | safe }}
+    </div>
+    <br><br>
+{% endfor %}
