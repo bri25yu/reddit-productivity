@@ -6,6 +6,7 @@ from typing import Tuple
 
 from django.shortcuts import render, redirect
 from django.views.generic.base import TemplateView
+from django.core.paginator import Paginator
 
 
 LABELS = [
@@ -141,5 +142,25 @@ class AnnotateView(TemplateView):
 
 
 def aggregate(request):
-    context = {}
+    comments = []
+    for i in range(len(annotations)):
+        if pd.isna(annotations.iloc[i]["score"]):
+            continue
+
+        datapoint_id = annotations.iloc[i]["datapoint_id"]
+        datapoint_index = AnnotateView._datapoint_id_to_index(data, datapoint_id)
+        row = data.iloc[datapoint_index]
+
+        comments.append({
+            "submission_title": markdown(row["submission_title"]),
+            "comment_parent": markdown(row["comment_parent"]),
+            "comment_body": markdown(row["comment_body"]),
+        })
+
+    paginator = Paginator(comments, 1) # Show 25 contacts per page.
+
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+
+    context = {"comments": page_obj, "page_obj": page_obj}
     return render(request, "annotate/aggregate.html", context)

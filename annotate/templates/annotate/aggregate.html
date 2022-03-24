@@ -9,6 +9,12 @@
 {% block header %}
     <link rel="stylesheet" type="text/css" href="{% static 'annotate/style.css' %}">
 
+    <style>
+        .pagination {
+            font-size: 110%;
+        }
+    </style>
+
     <script>
         if (window.history.replaceState) {
             window.history.replaceState(null, null, window.location.href);
@@ -23,5 +29,28 @@
 {% block content %}
     <div class="container">
         {% include 'annotate/submission_information.html' %}
+
+        <div class="pagination">
+            <span>
+                {% if page_obj.has_previous %}
+                    <a href="?page=1">&laquo; first</a>
+                    <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+                {% endif %}
+
+                <span class="current">
+                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+                </span>
+
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}">next</a>
+                    <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+                {% endif %}
+            </span>
+        </div>
+        <br><br>
+
+        <form action="{% url 'index' %}">
+            <button type="submit" class="submit-button" style="width: 20%;">Back</button>
+        </form>
     </div>
 {% endblock %}
