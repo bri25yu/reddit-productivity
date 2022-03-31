@@ -32,7 +32,7 @@ def create_adjudicated():
         + " [SEP] " + adjudicated["comment_body"]
     adjudicated["text"] = adjudicated["text"].replace([r"\n", r"\t"], " ", regex=True)
     adjudicated = adjudicated.drop(columns=["submission_title", "comment_parent", "comment_body"])
-    adjudicated["adjudicated"] = ""
+    adjudicated["adjudicated"] = "adjudicated"
     adjudicated = adjudicated.rename(columns={"score": "label"})
 
     adjudicated = adjudicated[["datapoint_id", "adjudicated", "label", "text"]]
@@ -42,6 +42,8 @@ def create_adjudicated():
 
 def compile_individual():
     adjudicated = pd.read_csv(ADJUDICATED_PATH, sep="\t", names=["datapoint_id", "adjudicated", "label", "text"])
+    data = pd.read_csv(ADJUDICATED_INPUT_DATA_PATH, sep="\t")
+    evaluation_set = set(data["datapoint_id"][data["annotation_split"] == "evaluation"])
     compiled = pd.DataFrame(columns=["datapoint_id", "annotator_id", "label", "text"])
 
     datapoint_to_text_mappings = \
@@ -50,6 +52,9 @@ def compile_individual():
     for annotator_id, annotations_path in ANNOTATION_PATHS:
         annotations_df = pd.read_csv(annotations_path, sep="\t")
         for _, row in annotations_df.iterrows():
+            if row["datapoint_id"] not in evaluation_set:
+                continue
+
             compiled = compiled.append({
                 "datapoint_id": row["datapoint_id"],
                 "annotator_id": annotator_id,
