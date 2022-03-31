@@ -30,6 +30,7 @@ def provision() -> Tuple[pd.DataFrame, pd.DataFrame, list]:
     if not os.path.exists(ANNOTATION_OUTPUT_PATH):
         annotations = pd.DataFrame(columns=ANNOTATIONS_DF_COLUMNS)
         annotations["datapoint_id"] = data["datapoint_id"]
+        annotations["score"] = ""
         annotations.to_csv(ANNOTATION_OUTPUT_PATH, sep="\t", index=False)
     else:
         annotations = pd.read_csv(ANNOTATION_OUTPUT_PATH, sep="\t")
