@@ -90,6 +90,8 @@ class DataHandler:
         if DataHandler.comment_missing(comment.body) or comment.id in seen:
             return None
 
+        seen.add(comment.id)
+
         if comment.parent_id.startswith("t3_"):  # Parent is a submission
             comment_parent = comment.parent().title
         elif comment.parent_id.startswith("t1_"):  # Parent is another comment
