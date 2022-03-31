@@ -32,8 +32,8 @@ class DataHandler:
         args = parser.parse_args()
 
         self.SUBREDDIT = args.subreddit
-        self.N_COMMENTS = args.n_comments
-        self.N_SUBMISSIONS = args.n_submissions
+        self.N_COMMENTS = int(args.n_comments)
+        self.N_SUBMISSIONS = int(args.n_submissions)
         self.DATA_SAVE_PATH = args.data_save_path
 
         self.COMMENTS_PER_SUBMISSION = self.N_COMMENTS // self.N_SUBMISSIONS
