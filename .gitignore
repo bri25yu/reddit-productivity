@@ -2,3 +2,10 @@ credentials.json
 *__pycache__
 db.sqlite3
 annotations.csv
+
+adjudicated_data.txt
+individual_annotations.txt
+data_validation.txt
+
+annotations_brian.csv
+annotations_grace.csv

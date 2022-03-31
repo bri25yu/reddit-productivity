@@ -35,6 +35,9 @@ def provision() -> Tuple[pd.DataFrame, pd.DataFrame, list]:
     else:
         annotations = pd.read_csv(ANNOTATION_OUTPUT_PATH, sep="\t")
 
+    annotations["score"][annotations["score"].isna()] = ""
+    annotations["score"] = annotations["score"].astype(str)
+
     random.seed(42)
     annotation_ordering = list(range(len(data)))
     random.shuffle(annotation_ordering)
@@ -98,7 +101,7 @@ class AnnotateView(TemplateView):
             "comments": comments,
             "datapoint_id": row["datapoint_id"],
             "annotation_split": annotation_split,
-            "annotations_finished": annotations_split["score"].notna().sum(),
+            "annotations_finished": (annotations_split["score"] != "").sum(),
             "annotation_total": len(data_split),
             "annotation_instructions": markdown(annotation_instructions, extensions=["tables"]),
             "labels": LABELS,
@@ -139,7 +142,7 @@ class AnnotateView(TemplateView):
     ) -> pd.DataFrame:
         for datapoint_id in ordering:
             datapoint_index = self._datapoint_id_to_index(annotations, datapoint_id)
-            if pd.isna(annotations.iloc[datapoint_index]["score"]):
+            if not annotations.iloc[datapoint_index]["score"]:
                 break
 
         return data.iloc[self._datapoint_id_to_index(data, datapoint_id)]
@@ -152,7 +155,7 @@ class AnnotateView(TemplateView):
 def aggregate(request):
     comments = []
     for i in range(len(annotations)):
-        if pd.isna(annotations.iloc[i]["score"]):
+        if not annotations.iloc[i]["score"]:
             continue
 
         datapoint_id = annotations.iloc[i]["datapoint_id"]

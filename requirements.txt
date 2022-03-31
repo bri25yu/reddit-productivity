@@ -6,3 +6,5 @@ markdown
 
 torch
 transformers
+
+numpy
