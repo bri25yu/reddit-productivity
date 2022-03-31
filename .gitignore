@@ -3,7 +3,7 @@ credentials.json
 db.sqlite3
 annotations.csv
 
-adjudicated_data.txt
+adjudicated.txt
 individual_annotations.txt
 
 annotations_brian.csv
