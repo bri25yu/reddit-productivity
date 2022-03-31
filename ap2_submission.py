@@ -1,13 +1,11 @@
 from pprint import pformat
-
-from collections import Counter
 import numpy as np
 
 import pandas as pd
 
 
 ADJUDICATED_INPUT_DATA_PATH = "data.csv"
-ADJUDICATED_INPUT_LABELS_PATH = ""
+ADJUDICATED_INPUT_LABELS_PATH = "adjudicated.csv"
 ADJUDICATED_PATH = "adjudicated_data.txt"
 
 ANNOTATION_PATHS = [
