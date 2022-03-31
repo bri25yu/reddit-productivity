@@ -85,7 +85,7 @@ class DataValidation:
                 assert len(cols[2]) > 0, "label #%s# in row %s is empty" % (cols[2], idx)
                 annotator_triples[cols[1], cols[0], cols[2]]=1
                 annos_by_data_id[cols[0]]=1
-            assert len(annos_by_data_id) >= min_count, "You must have at least %s labels; this file only has %s" % (min_count, count)
+            assert len(annos_by_data_id) >= min_count, "You must have at least %s labels; this file only has %s" % (min_count, len(annos_by_data_id))
 
         open(DATA_VALIDATION_PATH, "a").writelines([
             "This file looks to be in the correct format; %s data points\n\n" % len(annos_by_data_id),
