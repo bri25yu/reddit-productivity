@@ -1,10 +1,12 @@
+from pprint import pformat
+
 from collections import Counter
 import numpy as np
 
 import pandas as pd
 
 
-ADJUDICATED_INPUT_DATA_PATH = ""
+ADJUDICATED_INPUT_DATA_PATH = "data.csv"
 ADJUDICATED_INPUT_LABELS_PATH = ""
 ADJUDICATED_PATH = "adjudicated_data.txt"
 
@@ -23,22 +25,23 @@ def create_adjudicated():
 
     labels = pd.read_csv(ADJUDICATED_INPUT_LABELS_PATH, sep="\t")
 
-    adjudicated = data.join(labels, on="datapoint_id")
+    adjudicated = data.merge(labels, on="datapoint_id")
 
     adjudicated["text"] = adjudicated["submission_title"] \
         + " [SEP] " + adjudicated["comment_parent"] \
         + " [SEP] " + adjudicated["comment_body"]
+    adjudicated["text"] = adjudicated["text"].replace([r"\n", r"\t"], " ", regex=True)
     adjudicated = adjudicated.drop(columns=["submission_title", "comment_parent", "comment_body"])
     adjudicated["adjudicated"] = ""
     adjudicated = adjudicated.rename(columns={"score": "label"})
 
-    adjudicated = adjudicated[("datapoint_id", "adjudicated", "label", "text")]
+    adjudicated = adjudicated[["datapoint_id", "adjudicated", "label", "text"]]
 
-    adjudicated.to_csv(ADJUDICATED_PATH, sep="\t", index=False)
+    adjudicated.to_csv(ADJUDICATED_PATH, sep="\t", index=False, header=False)
 
 
 def compile_individual():
-    adjudicated = pd.read_csv(ADJUDICATED_PATH, sep="\t")
+    adjudicated = pd.read_csv(ADJUDICATED_PATH, sep="\t", names=["datapoint_id", "adjudicated", "label", "text"])
     compiled = pd.DataFrame(columns=["datapoint_id", "annotator_id", "label", "text"])
 
     datapoint_to_text_mappings = \
@@ -52,9 +55,9 @@ def compile_individual():
                 "annotator_id": annotator_id,
                 "label": row["score"],
                 "text": datapoint_to_text_mappings[row["datapoint_id"]],
-            })
+            }, ignore_index=True)
 
-    compiled.to_csv(INDIVIDUAL_ANNOTATION_PATH, sep="\t", index=False)
+    compiled.to_csv(INDIVIDUAL_ANNOTATION_PATH, sep="\t", index=False, header=False)
 
 
 class DataValidation:
@@ -72,7 +75,7 @@ class DataValidation:
         with open(filename, encoding="utf-8") as file:
             for idx, line in enumerate(file):
                 cols=line.rstrip().split("\t")
-                assert len(cols) == 4, "%s does not have 4 columns" % cols
+                assert len(cols) == 4, "%s does not have 4 columns" % pformat(cols)
                 assert len(cols[3]) > 0, "text #%s# in row %s is empty" % (cols[3], idx)
                 assert len(cols[2]) > 0, "label #%s# in row %s is empty" % (cols[2], idx)
                 annotator_triples[cols[1], cols[0], cols[2]]=1
@@ -80,7 +83,7 @@ class DataValidation:
             assert len(annos_by_data_id) >= min_count, "You must have at least %s labels; this file only has %s" % (min_count, count)
 
         open(DATA_VALIDATION_PATH, "a").writelines([
-            "This file looks to be in the correct format; %s data points" % len(annos_by_data_id),
+            "This file looks to be in the correct format; %s data points\n" % len(annos_by_data_id),
         ])
 
     @staticmethod
@@ -97,7 +100,7 @@ class DataValidation:
                 anno_id=cols[1]
                 label=cols[2]
 
-                assert len(cols) == 4, "%s does not have 4 columns" % cols
+                assert len(cols) == 4, "%s does not have 4 columns" % pformat(cols)
                 assert len(cols[3]) > 0, "text #%s# in row %s is empty" % (cols[3], idx)
                 assert len(label) > 0, "label #%s# in row %s is empty" % (cols[2], idx)
                 count+=1
@@ -133,7 +136,7 @@ class DataValidation:
         for label in labels:
             to_write.append("%s: %s" % (label, labels[label]))
 
-        to_write.append("\nThis file looks to be in the correct format; %s data points; %s annotations" % (len(annos_by_data_id), len(annotator_triples)))
+        to_write.append("\nThis file looks to be in the correct format; %s data points; %s annotations\n" % (len(annos_by_data_id), len(annotator_triples)))
 
         f.writelines(to_write)
         f.close()
@@ -190,9 +193,9 @@ class DataValidation:
 
         observed=np.mean(agreements)
         open(DATA_VALIDATION_PATH, "a").writelines([
-            "Observed: %.3f" % (observed),
-            "Expected: %.3f" % (expected),
-            "Fleiss' kappa: %.3f" % ((observed-expected)/(1-expected)),
+            "Observed: %.3f\n" % (observed),
+            "Expected: %.3f\n" % (expected),
+            "Fleiss' kappa: %.3f\n" % ((observed-expected)/(1-expected)),
         ])
 
 
