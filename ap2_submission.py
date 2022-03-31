@@ -50,7 +50,7 @@ def compile_individual():
     for annotator_id, annotations_path in ANNOTATION_PATHS:
         annotations_df = pd.read_csv(annotations_path, sep="\t")
         for _, row in annotations_df.iterrows():
-            compiled.append({
+            compiled = compiled.append({
                 "datapoint_id": row["datapoint_id"],
                 "annotator_id": annotator_id,
                 "label": row["score"],
@@ -83,7 +83,7 @@ class DataValidation:
             assert len(annos_by_data_id) >= min_count, "You must have at least %s labels; this file only has %s" % (min_count, count)
 
         open(DATA_VALIDATION_PATH, "a").writelines([
-            "This file looks to be in the correct format; %s data points\n" % len(annos_by_data_id),
+            "This file looks to be in the correct format; %s data points\n\n" % len(annos_by_data_id),
         ])
 
     @staticmethod
@@ -119,7 +119,7 @@ class DataValidation:
                     labels[label]=0
                 labels[label]+=1    
 
-        assert len(annos_by_data_id) >= 0, "You must have labels for at least 500 documents; this file only has %s" % (len(annos_by_data_id))
+        assert len(annos_by_data_id) >= 500, "You must have labels for at least 500 documents; this file only has %s" % (len(annos_by_data_id))
 
         for data_id in annos_by_data_id:
             assert len(annos_by_data_id[data_id]) == 2, "Each data point must have two annotations; data id %s does not" % data_id
@@ -128,13 +128,13 @@ class DataValidation:
         f = open(DATA_VALIDATION_PATH, "a")
         to_write = []
 
-        to_write.append("Annotators:\n")
+        to_write.append("Annotators:\n\n")
         for anno_id in annos_by_annotator:
-            to_write.append("%s: %s" % (anno_id, len(annos_by_annotator[anno_id])))
+            to_write.append("%s: %s\n" % (anno_id, len(annos_by_annotator[anno_id])))
 
-        to_write.append("\nLabels:\n")
+        to_write.append("\nLabels:\n\n")
         for label in labels:
-            to_write.append("%s: %s" % (label, labels[label]))
+            to_write.append("%s: %s\n" % (label, labels[label]))
 
         to_write.append("\nThis file looks to be in the correct format; %s data points; %s annotations\n" % (len(annos_by_data_id), len(annotator_triples)))
 

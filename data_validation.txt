@@ -1,0 +1,21 @@
+This file looks to be in the correct format; 1000 data points
+
+Annotators:
+
+Brian: 1000
+Grace: 1000
+
+Labels:
+
+Argue: 352
+Rhetorical: 908
+Inquire: 166
+Inform: 278
+Summarize: 48
+Connect: 180
+Arbitrate: 68
+
+This file looks to be in the correct format; 1000 data points; 2000 annotations
+Observed: 1.000
+Expected: 0.273
+Fleiss' kappa: 1.000
